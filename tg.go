@@ -63,19 +63,19 @@ type CallbackQuery struct {
 }
 
 type EditMessageRequest struct {
-	ChatID      int64  `json:"chat_id"`
-	MessageID   int    `json:"message_id"`
-	Text        string `json:"text"`
-	ParseMode   string `json:"parse_mode,omitempty"`
-	ReplyMarkup InlineKeyboardMarkup
+	ChatID      int64                `json:"chat_id"`
+	MessageID   int                  `json:"message_id"`
+	Text        string               `json:"text"`
+	ParseMode   string               `json:"parse_mode,omitempty"`
+	ReplyMarkup InlineKeyboardMarkup `json:"reply_markup,omitempty"`
 }
 
 type MessageRequest struct {
-	ChatID                int64  `json:"chat_id"`
-	Text                  string `json:"text"`
-	ParseMode             string `json:"parse_mode,omitempty"`
-	ReplyMarkup           ReplyMarkup
-	DisableWebPagePreview bool `json:"disable_web_page_preview,omitempty"`
+	ChatID                int64       `json:"chat_id"`
+	Text                  string      `json:"text"`
+	ParseMode             string      `json:"parse_mode,omitempty"`
+	ReplyMarkup           ReplyMarkup `json:"reply_markup,omitempty"`
+	DisableWebPagePreview bool        `json:"disable_web_page_preview,omitempty"`
 }
 
 func (u *MessageRequest) MarshalJSON() ([]byte, error) {
@@ -138,7 +138,24 @@ type InlineKeyboardMarkup struct {
 	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
 }
 
+type ReplyKeyboardMarkup struct {
+	Keyboard       [][]KeyboardButton `json:"keyboard"`
+	ResizeKeyboard bool               `json:"resize_keyboard,omitempty"`
+	OneTimeKeyboad bool               `json:"one_time_keyboard,omitempty"`
+	Selective      bool               `json:"selective,omitempty"`
+}
+
 func (m InlineKeyboardMarkup) Serialize() (string, error) {
+	res, err := json.Marshal(m)
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(res), nil
+}
+
+func (m ReplyKeyboardMarkup) Serialize() (string, error) {
 	res, err := json.Marshal(m)
 
 	if err != nil {
@@ -151,6 +168,12 @@ func (m InlineKeyboardMarkup) Serialize() (string, error) {
 type InlineKeyboardButton struct {
 	Text         string `json:"text"`
 	CallbackData string `json:"callback_data,omitempty"`
+}
+
+type KeyboardButton struct {
+	Text            string `json:"text"`
+	RequestContact  bool   `json:"request_contact,omitempty"`
+	RequestLocation bool   `json:"request_location,omitempty"`
 }
 
 type GetUpdatesRequest struct {
